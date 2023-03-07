@@ -1,42 +1,56 @@
 import * as api from '../../services/contacts';
-import * as action from './contacts-action';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+// import * as action from './contacts-action';
 
-export const fetchAllContacts = () => {
-  const func = async dispatch => {
+export const fetchAllContacts = createAsyncThunk(
+  'contacts/fetch-all',
+  async (_, thunkApi) => {
     try {
-      dispatch(action.fetchAllContactsLoading());
       const data = await api.getAllContacts();
-      dispatch(action.fetchAllContactsSuccess(data));
+      return data;
     } catch ({ response }) {
-      dispatch(action.fetchAllContactsError(response.data.message));
+      return thunkApi.rejectWithValue(response.data.message);
     }
-  };
-  return func;
-};
+  }
+);
 
-export const fetchAddContact = ({ name, number }) => {
-  const func = async dispatch => {
+export const fetchAddContact = createAsyncThunk(
+  'contacts/fetch-add',
+  async (data, thunkApi) => {
     try {
-      dispatch(action.fetchAddContactsLoading());
-      const result = await api.addContact(name, number);
-      dispatch(action.fetchAddContactsSuccess(result));
+      const result = await api.addContact(data);
+      return result;
     } catch ({ response }) {
-      console.log('response: ', response.data.message);
-      dispatch(action.fetchAddContactsError(response));
+      return thunkApi.rejectWithValue(response.data.message);
     }
-  };
-  return func;
-};
+  },
+  {
+    condition: ({ name, number }, { getState }) => {
+      const { contacts } = getState();
+      const normalizedTitle = name.toLowerCase();
+      const normalizedAuthor = number.toLowerCase();
+      const result = contacts.items.find(({ name, number }) => {
+        return (
+          name.toLowerCase() === normalizedTitle &&
+          number.toLowerCase() === normalizedAuthor
+        );
+      });
+      if (result) {
+        alert(`${number}. Author: ${name} is already ixist`);
+        return false;
+      }
+    },
+  }
+);
 
-export const fetchDeleteContacts = id => {
-  const func = async dispatch => {
+export const fetchDeleteContacts = createAsyncThunk(
+  'contacts/delete',
+  async (id, thunkApi) => {
     try {
-      dispatch(action.fetchDeleteContactsLoading());
       await api.deleteContacts(id);
-      dispatch(action.fetchDeleteContactsSuccess);
+      return id;
     } catch ({ response }) {
-      dispatch(action.fetchDeleteContactsError(response.data.message));
+      return thunkApi.rejectWithValue(response.data.message);
     }
-  };
-  return func;
-};
+  }
+);

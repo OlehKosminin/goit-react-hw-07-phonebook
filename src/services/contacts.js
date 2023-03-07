@@ -6,7 +6,7 @@ const contactInstance = axios.create({
 
 export const getAllContacts = async () => {
   const { data } = await contactInstance.get('/');
-  // console.log(data);
+  console.log(data);
   return data;
 };
 

@@ -23,7 +23,7 @@ const Phonebook = () => {
 
   useEffect(() => {
     dispatch(fetchAllContacts());
-  }, [dispatch]);
+  }, []);
 
   function isDublicate(name) {
     const normalized = name.toLowerCase();
