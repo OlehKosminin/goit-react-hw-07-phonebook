@@ -3,7 +3,7 @@ import styles from './contactList.module.scss';
 const ContactList = ({ items, removeContact }) => {
   const contacts = items.map(({ id, name, number }) => (
     <li key={id}>
-      {name}: {number}{' '}
+      {name}: {number}
       <button
         className={styles.contactListItemBtn}
         onClick={() => removeContact(id)}

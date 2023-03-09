@@ -20,7 +20,6 @@ const contactsSlice = createSlice({
         store.loading = true;
       })
       .addCase(fetchAllContacts.fulfilled, (store, { payload }) => {
-        console.log('payload: ', payload);
         store.loading = false;
         store.items = payload;
       })
