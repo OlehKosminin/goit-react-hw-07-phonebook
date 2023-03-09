@@ -13,14 +13,11 @@ import {
   fetchDeleteContacts,
 } from '../../redux/contacts/contacts-operations';
 import { setFilter } from 'redux/filter/filter-slice';
-import { getAllContacts } from 'redux/contacts/contacts-selectors';
-import { getFilterCont } from 'redux/filter/filter-selector';
-import store from 'redux/store';
+import { getFilteredContacts } from 'redux/contacts/contacts-selectors';
 
 const Phonebook = () => {
-  const contacts = useSelector(getAllContacts);
-  const filter = useSelector(getFilterCont);
-  console.log('store: ', store);
+  const filteredContacts = useSelector(getFilteredContacts);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -37,28 +34,8 @@ const Phonebook = () => {
   };
 
   const handleFilter = ({ target }) => {
-    console.log('target: ', target.value);
     dispatch(setFilter(target.value));
   };
-
-  const getFilterContact = () => {
-    if (!filter) {
-      return contacts;
-    }
-
-    const normalizedFilter = filter.toLowerCase();
-    if (contacts.items.length < 1) {
-      console.log('i work');
-      return;
-    }
-    const result = contacts.items.filter(({ name }) => {
-      return name.toLowerCase().includes(normalizedFilter);
-    });
-    return result;
-  };
-
-  const filterContact = getFilterContact();
-  // console.log('filterContact.items: ', filterContact.items);
 
   return (
     <div>
@@ -67,11 +44,8 @@ const Phonebook = () => {
         <ContactForm onSubmit={onAddContact} />
         <h2>Contact</h2>
         <ContactFilter handleChange={handleFilter} />
-        {filterContact.items.length > 1 ? (
-          <ContactList
-            items={filterContact.items}
-            removeContact={removeContact}
-          />
+        {filteredContacts ? (
+          <ContactList items={filteredContacts} removeContact={removeContact} />
         ) : (
           <p>No search contact</p>
         )}
